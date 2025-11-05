@@ -38,3 +38,8 @@ def rasterizer(text: str,
         img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
 
     return np.array(img)
+
+def save_image(img: np.ndarray, path: str):
+    img = Image.fromarray(img)
+    img.save(path)
+
