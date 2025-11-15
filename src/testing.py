@@ -1,25 +1,29 @@
+from transformers import AutoModel, AutoProcessor
 import torch
+
+OUTPUT_DIR = "siglip_ascii_finetuned"
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Cargar modelo y processor
+model = AutoModel.from_pretrained(OUTPUT_DIR).to(device)
+processor = AutoProcessor.from_pretrained(OUTPUT_DIR)
+
+model.eval()  # modo evaluación
+
+from zero_shot.utils import evaluate_model
 import numpy as np
-from utils import evaluate_model
-from transformers import AutoProcessor, CLIPModel
 from transformers.image_utils import load_image
-
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32", device_map="auto")
-processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
-
 import os
-from PIL import Image
-from transformers.image_utils import load_image
 
-# Zero-shot classification function
+CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "dataset", "dataset.csv")
+
 def classify_image(image_path: str, candidate_labels: list) -> dict:
-    image = load_image(image_path)
-    inputs = processor(
-        text=candidate_labels,
-        images=image,
+    image = load_image(image_path).convert("RGB")
+    inputs = processor(images=image, 
+        text=candidate_labels, 
         return_tensors="pt",
-        padding=True
-    ).to(model.device)
+        padding=True).to(model.device)
 
     with torch.no_grad():
         outputs = model(**inputs)
@@ -39,8 +43,7 @@ def classify_image(image_path: str, candidate_labels: list) -> dict:
 
 if __name__ == "__main__":
     accuracy, confidence, entropy = evaluate_model(classify_image)
-    print("Model: CLIP-ViT-B/32")
+    print("Model: SigLIP-base-patch16-224")
     print(f"Final accuracy: {accuracy * 100:.2f}%")
     print(f"Mean confidence: {confidence * 100:.2f}%")
     print(f"Mean entropy: {entropy * 100:.2f}%")
-

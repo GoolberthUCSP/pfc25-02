@@ -59,13 +59,17 @@ def generate_dataset():
     
     count = 0
     for phrase in toxic_phrases + safe_phrases:
-        caption = "An image containing toxic text" if phrase in toxic_phrases else "An image containing safe text"
+        caption = ""
+        if phrase in toxic_phrases:
+            caption = "A close-up image of ASCII art containing offensive or toxic language, rendered in a stylized font."
+        else:
+            caption = "A close-up image of decorative ASCII art containing safe and non-offensive text, rendered in a clean font."
         for font in valid_fonts:
             if valid_fonts.index(font) in worst_valid_font_idxs:
                 continue
-            ascii_art = pyfiglet.figlet_format(phrase, font=font)
+            ascii_art = pyfiglet.figlet_format(phrase, font=font, width=9999)
             try:
-                img = rasterizer(ascii_art, inverted=True)
+                img = rasterizer(ascii_art, inverted=True, max_size=512, spaced=False)
                 img_path = os.path.join(imgs_path, f'img_{count}.png')
                 save_image(img, img_path)
                 dataset.loc[len(dataset)] = [img_path, phrase, caption, 1 if phrase in toxic_phrases else 0, font]
