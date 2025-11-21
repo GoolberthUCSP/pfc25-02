@@ -2,8 +2,8 @@ import os
 from transformers import AutoProcessor, CLIPModel
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Subset
-from utils import collate_fn, ClipContrastiveLoss
-from dataset import ClipDataset
+from utils import ClipContrastiveLoss
+from ..utils import ASCIIDataset, collate_fn
 from trainer import CLIPTrainer, training_args
 
 # === Carga modelo y procesador ===
@@ -18,7 +18,7 @@ OUTPUT_DIR = "clip_ascii_finetuned"
 CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "dataset", "dataset.csv")
 
 # === Dataset ===
-full_dataset = ClipDataset(csv_file=CSV_PATH, processor=processor)
+full_dataset = ASCIIDataset(csv_file=CSV_PATH, processor=processor)
 data_df = full_dataset.data
 
 train_idxs, test_idxs = train_test_split(

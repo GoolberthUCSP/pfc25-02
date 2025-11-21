@@ -3,7 +3,7 @@ import numpy as np
 from utils import evaluate_model
 from transformers import AlignModel, AlignProcessor
 
-model = AlignModel.from_pretrained("kakaobrain/align-base", device_map="auto")
+model = AlignModel.from_pretrained("kakaobrain/align-base").to("cuda" if torch.cuda.is_available() else "cpu")
 processor = AlignProcessor.from_pretrained("kakaobrain/align-base")
 
 from transformers.image_utils import load_image

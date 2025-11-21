@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-dataset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..','..', 'data','dataset.csv')
+dataset_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..','..', 'data', 'dataset','dataset.csv')
 
 def evaluate_model(classify_image : callable, dataset_path : str = dataset_path) -> float:
     df = pd.read_csv(dataset_path)

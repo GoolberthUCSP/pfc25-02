@@ -1,22 +1,9 @@
 import torch
 from torch import nn
 
-def collate_fn(batch):
-    batch_dict = {}
-    keys = set().union(*(d.keys() for d in batch))
-
-    for k in keys:
-        try:
-            batch_dict[k] = torch.stack([x[k] for x in batch])
-        except Exception as e:
-            print(f"[WARN] Skipping key {k}: {e}")
-    return batch_dict
-
-
 class SigLIPLoss(nn.Module):
-    def __init__(self, model, temperature=0.1):
+    def __init__(self, temperature=0.1):
         super().__init__()
-        self.model = model
         self.temperature = temperature
         self.loss_fct = nn.BCEWithLogitsLoss()
 

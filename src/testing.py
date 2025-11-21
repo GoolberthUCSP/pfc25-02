@@ -1,7 +1,11 @@
 from transformers import AutoModel, AutoProcessor
 import torch
+import os
 
-OUTPUT_DIR = "siglip_ascii_finetuned"
+
+model = "clip"
+CURR_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_DIR = os.path.join(CURR_DIR,"..", "..", "..", f"{model}_ascii_finetuned")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -43,7 +47,7 @@ def classify_image(image_path: str, candidate_labels: list) -> dict:
 
 if __name__ == "__main__":
     accuracy, confidence, entropy = evaluate_model(classify_image)
-    print("Model: SigLIP-base-patch16-224")
+    print(f"Model: Pretrained {model} fine-tuned")
     print(f"Final accuracy: {accuracy * 100:.2f}%")
     print(f"Mean confidence: {confidence * 100:.2f}%")
     print(f"Mean entropy: {entropy * 100:.2f}%")

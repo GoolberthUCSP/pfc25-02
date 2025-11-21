@@ -1,21 +1,19 @@
 import os
-from transformers import AutoProcessor, AutoModel
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Subset
-from utils import SigLIPLoss
+from .utils import AlignLoss
 from ..utils import ASCIIDataset, collate_fn
-from trainer import SigLIPTrainer, training_args
-import torch
+from .trainer import AlignTrainer, training_args
+from transformers import AlignModel, AlignProcessor
 
-# === Carga modelo y procesador ===
-model = AutoModel.from_pretrained("google/siglip-base-patch16-224", device_map="auto")
-processor = AutoProcessor.from_pretrained("google/siglip-base-patch16-224") 
+model = AlignModel.from_pretrained("kakaobrain/align-base", device_map="auto")
+processor = AlignProcessor.from_pretrained("kakaobrain/align-base")
 
 for param in model.parameters():
     param.requires_grad = True
 
 # === Paths ===
-OUTPUT_DIR = "siglip_ascii_finetuned"
+OUTPUT_DIR = "align_ascii_finetuned"
 CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "dataset", "dataset.csv")
 
 # === Dataset ===
@@ -33,10 +31,10 @@ train_dataset = Subset(full_dataset, train_idxs)
 test_dataset = Subset(full_dataset, test_idxs)
 
 # === Loss ===
-loss_fn = SigLIPLoss()
+loss_fn = AlignLoss()
 
 # === Trainer ===
-trainer = SigLIPTrainer(
+trainer = AlignTrainer(
     model=model,
     train_dataset=train_dataset,
     eval_dataset=test_dataset,
