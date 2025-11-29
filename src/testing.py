@@ -1,11 +1,15 @@
 from transformers import AutoModel, AutoProcessor
+from src.globals import DATASET_CSV_PATH, TMP_PATH
+from src.fine_tuning.utils import get_stratified_indexes
 import torch
 import os
+from src.utils import evaluate_model
+import numpy as np
+from transformers.image_utils import load_image
 
 
-model = "clip"
-CURR_DIR = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_DIR = os.path.join(CURR_DIR,"..", "..", "..", f"{model}_ascii_finetuned")
+model_name = "siglip"
+OUTPUT_DIR = os.path.join(TMP_PATH, f"{model_name}_ascii_finetuned")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -13,14 +17,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = AutoModel.from_pretrained(OUTPUT_DIR).to(device)
 processor = AutoProcessor.from_pretrained(OUTPUT_DIR)
 
+train_idxs, test_idxs = get_stratified_indexes()
+
 model.eval()  # modo evaluación
-
-from zero_shot.utils import evaluate_model
-import numpy as np
-from transformers.image_utils import load_image
-import os
-
-CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "dataset", "dataset.csv")
 
 def classify_image(image_path: str, candidate_labels: list) -> dict:
     image = load_image(image_path).convert("RGB")
@@ -46,8 +45,8 @@ def classify_image(image_path: str, candidate_labels: list) -> dict:
     }
 
 if __name__ == "__main__":
-    accuracy, confidence, entropy = evaluate_model(classify_image)
-    print(f"Model: Pretrained {model} fine-tuned")
-    print(f"Final accuracy: {accuracy * 100:.2f}%")
-    print(f"Mean confidence: {confidence * 100:.2f}%")
-    print(f"Mean entropy: {entropy * 100:.2f}%")
+    accuracy, confidence_gap, entropy = evaluate_model(classify_image, split="subset", indexes=test_idxs)
+    print(f"Model               : Pretrained {model_name} fine-tuned")
+    print(f"Final accuracy      : {accuracy * 100:.2f}%")
+    print(f"Mean confidence gap : {confidence_gap * 100:.2f}%")
+    print(f"Mean entropy        : {entropy:.4f}")

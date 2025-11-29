@@ -42,4 +42,3 @@ def rasterizer(text: str,
 def save_image(img: np.ndarray, path: str):
     img = Image.fromarray(img)
     img.save(path)
-

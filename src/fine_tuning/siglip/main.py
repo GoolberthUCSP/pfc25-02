@@ -1,11 +1,10 @@
 import os
 from transformers import AutoProcessor, AutoModel
-from sklearn.model_selection import train_test_split
 from torch.utils.data import Subset
-from utils import SigLIPLoss
-from ..utils import ASCIIDataset, collate_fn
-from trainer import SigLIPTrainer, training_args
-import torch
+from src.globals import DATASET_CSV_PATH, TMP_PATH
+from src.fine_tuning.utils import ASCIIDataset, collate_fn, get_stratified_indexes
+from src.fine_tuning.siglip.utils import SigLIPLoss
+from src.fine_tuning.siglip.trainer import SigLIPTrainer, training_args
 
 # === Carga modelo y procesador ===
 model = AutoModel.from_pretrained("google/siglip-base-patch16-224", device_map="auto")
@@ -15,19 +14,12 @@ for param in model.parameters():
     param.requires_grad = True
 
 # === Paths ===
-OUTPUT_DIR = "siglip_ascii_finetuned"
-CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "dataset", "dataset.csv")
+OUTPUT_DIR = os.path.join(TMP_PATH, "siglip_ascii_finetuned")
 
 # === Dataset ===
-full_dataset = ASCIIDataset(csv_file=CSV_PATH, processor=processor)
-data_df = full_dataset.data
+full_dataset = ASCIIDataset(csv_file=DATASET_CSV_PATH, processor=processor)
 
-train_idxs, test_idxs = train_test_split(
-    range(len(full_dataset)),
-    test_size=0.2,
-    stratify=data_df["caption"],
-    random_state=42
-)
+train_idxs, test_idxs = get_stratified_indexes()
 
 train_dataset = Subset(full_dataset, train_idxs)
 test_dataset = Subset(full_dataset, test_idxs)
@@ -48,6 +40,11 @@ trainer = SigLIPTrainer(
 
 # === Entrenamiento ===
 trainer.train()
+trainer.save_state()
+
+# === Evaluación ===
+eval_results = trainer.evaluate()
+print(f"Evaluation results: {eval_results}")
 
 # === Guardado final ===
 os.makedirs(OUTPUT_DIR, exist_ok=True)

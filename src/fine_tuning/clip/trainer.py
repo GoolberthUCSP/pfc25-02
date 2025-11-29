@@ -1,12 +1,15 @@
 from transformers import TrainingArguments, Trainer
+from src.globals import TMP_PATH
+import os
 
 training_args = TrainingArguments(
-    output_dir="clip_ascii_finetuned",
+    output_dir=os.path.join(TMP_PATH, "clip_16_ascii_finetuned"),
     per_device_train_batch_size=64,
     per_device_eval_batch_size=64,
-    num_train_epochs=20,              
+    num_train_epochs=10,              
     learning_rate=5e-5,               
     eval_strategy="epoch",
+    logging_strategy="epoch",
     save_strategy="no",
     save_total_limit=2,
     logging_dir="./logs",

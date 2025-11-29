@@ -1,11 +1,12 @@
 import torch
 import numpy as np
-from utils import evaluate_model
+from src.utils import evaluate_model
 from transformers import AutoProcessor, CLIPModel
 from transformers.image_utils import load_image
 
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32", device_map="auto")
-processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
+model_dir = "openai/clip-vit-base-patch16"
+model = CLIPModel.from_pretrained(model_dir, device_map="auto")
+processor = AutoProcessor.from_pretrained(model_dir)
 
 # Zero-shot classification function
 def classify_image(image_path: str, candidate_labels: list) -> dict:
@@ -34,13 +35,8 @@ def classify_image(image_path: str, candidate_labels: list) -> dict:
     }
 
 if __name__ == "__main__":
-    accuracy, confidence, entropy = evaluate_model(classify_image)
-    print("Model: CLIP-ViT-B/32")
-    print(f"Final accuracy: {accuracy * 100:.2f}%")
-    print(f"Mean confidence: {confidence * 100:.2f}%")
-    print(f"Mean entropy: {entropy * 100:.2f}%")
-
-# Model: CLIP-ViT-B/32
-# Final accuracy: 48.50% 
-# Mean confidence: 29.65%
-# Mean entropy: 62.38% 
+    accuracy, confidence_gap, entropy = evaluate_model(classify_image)
+    print("Model: CLIP ViT-B/16")
+    print(f"Final accuracy      : {accuracy * 100:.2f}%")
+    print(f"Mean confidence gap : {confidence_gap * 100:.2f}%")
+    print(f"Mean entropy        : {entropy:.4f}")

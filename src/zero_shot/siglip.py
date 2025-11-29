@@ -1,11 +1,12 @@
 import torch
 import numpy as np
-from utils import evaluate_model
+from src.utils import evaluate_model
 from transformers.image_utils import load_image
 from transformers import AutoProcessor, AutoModel
 
-model = AutoModel.from_pretrained("google/siglip-base-patch16-224", device_map="auto", attn_implementation="sdpa")
-processor = AutoProcessor.from_pretrained("google/siglip-base-patch16-224") 
+model_dir = "google/siglip-base-patch16-224"
+model = AutoModel.from_pretrained(model_dir, device_map="auto", attn_implementation="sdpa")
+processor = AutoProcessor.from_pretrained(model_dir) 
 
 # Zero-shot classification function
 def classify_image(image_path: str, candidate_labels: list) -> dict:
@@ -32,13 +33,8 @@ def classify_image(image_path: str, candidate_labels: list) -> dict:
     }
 
 if __name__ == "__main__":
-    accuracy, confidence, entropy = evaluate_model(classify_image)
-    print("Model: SigLIP-base-patch16-224")
-    print(f"Final accuracy: {accuracy * 100:.2f}%")
-    print(f"Mean confidence: {confidence * 100:.2f}%")
-    print(f"Mean entropy: {entropy * 100:.2f}%")
-
-# Model: SigLIP-base-patch16-224
-# Final accuracy: 49.92%
-# Mean confidence: 56.25%
-# Mean entropy: 47.12%
+    accuracy, confidence_gap, entropy = evaluate_model(classify_image)
+    print("Model: SigLIP ViT-B/16")
+    print(f"Final accuracy      : {accuracy * 100:.2f}%")
+    print(f"Mean confidence gap : {confidence_gap * 100:.2f}%")
+    print(f"Mean entropy        : {entropy:.4f}")

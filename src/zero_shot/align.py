@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from utils import evaluate_model
+from src.utils import evaluate_model
 from transformers import AlignModel, AlignProcessor
 
 model = AlignModel.from_pretrained("kakaobrain/align-base").to("cuda" if torch.cuda.is_available() else "cpu")
@@ -41,8 +41,8 @@ def classify_image(image_path: str, candidate_labels: list) -> dict:
     }
 
 if __name__ == "__main__":
-    accuracy, confidence, entropy = evaluate_model(classify_image)
+    accuracy, confidence_gap, entropy = evaluate_model(classify_image)
     print("Model: ALIGN-base")
-    print(f"Final accuracy: {accuracy * 100:.2f}%")
-    print(f"Mean confidence: {confidence * 100:.2f}%")
-    print(f"Mean entropy: {entropy * 100:.2f}%")
+    print(f"Final accuracy      : {accuracy * 100:.2f}%")
+    print(f"Mean confidence gap : {confidence_gap * 100:.2f}%")
+    print(f"Mean entropy        : {entropy:.4f}")

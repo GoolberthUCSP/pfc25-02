@@ -1,5 +1,6 @@
 import pyfiglet
 from utils import rasterizer, save_image
+from src.globals import DATASET_PATH, DATASET_CSV_PATH, DATASET_IMGS_PATH
 import os
 import pandas as pd
 
@@ -45,17 +46,15 @@ print(f"Loaded {len(valid_fonts)} valid TOXASCII fonts.")
 def generate_dataset():
     
     dataset = pd.DataFrame(columns=['image_path', 'text_label', 'caption', 'binary_target', 'font'])
-    dataset_path = os.path.join(abs_path, 'dataset')
-    imgs_path = os.path.join(dataset_path, 'imgs')
     
-    if not os.path.exists(dataset_path):
-        os.makedirs(dataset_path)
+    if not os.path.exists(DATASET_PATH):
+        os.makedirs(DATASET_PATH)
     else:
-        if os.path.exists(imgs_path):
-            for f in os.listdir(imgs_path):
-                os.remove(os.path.join(imgs_path, f))
+        if os.path.exists(DATASET_IMGS_PATH):
+            for f in os.listdir(DATASET_IMGS_PATH):
+                os.remove(os.path.join(DATASET_IMGS_PATH, f))
         else:
-            os.makedirs(imgs_path)
+            os.makedirs(DATASET_IMGS_PATH)
     
     count = 0
     for phrase in toxic_phrases + safe_phrases:
@@ -70,7 +69,7 @@ def generate_dataset():
             ascii_art = pyfiglet.figlet_format(phrase, font=font, width=9999)
             try:
                 img = rasterizer(ascii_art, inverted=True, max_size=512, spaced=False)
-                img_path = os.path.join(imgs_path, f'img_{count}.png')
+                img_path = os.path.join(DATASET_IMGS_PATH, f'img_{count}.png')
                 save_image(img, img_path)
                 dataset.loc[len(dataset)] = [img_path, phrase, caption, 1 if phrase in toxic_phrases else 0, font]
                 count += 1
@@ -82,7 +81,7 @@ def generate_dataset():
            - {len(valid_fonts) - len(worst_valid_font_idxs)} fonts
            - {len(toxic_phrases)} toxic phrases
            - {len(safe_phrases)} safe phrases""")
-    dataset.to_csv(os.path.join(abs_path, 'dataset.csv'), index=False)
+    dataset.to_csv(DATASET_CSV_PATH, index=False)
 
 
 if __name__ == "__main__":
