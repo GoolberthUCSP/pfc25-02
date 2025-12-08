@@ -115,7 +115,7 @@ if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     torch.save(model.state_dict(), os.path.join(OUTPUT_DIR, "openclip_ascii.pth"))
-    print(f"Model saved to {OUTPUT_DIR}/openclip_ascii.pth") # CApas de tensión
+    print(f"Model saved to {OUTPUT_DIR}/openclip_ascii.pth") # Capas de tensión
 
 #     C:\Users\fred\AppData\Roaming\Python\Python312\site-packages\timm\models\layers\__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
 #   warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)

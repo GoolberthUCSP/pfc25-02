@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import os
 
-font_path = os.path.join(os.path.dirname(__file__), '..', 'fonts', 'DejaVuSansMono.ttf')
+font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'DejaVuSansMono.ttf')
 
 def rasterizer(text: str,
                font_path: str = font_path,

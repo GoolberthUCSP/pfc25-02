@@ -1,1 +1,1 @@
-# pfc25-02
+# Project: Fine tuning de modelos ligeros para la detección de arte ASCII ofensivo (ToxASCII)

@@ -8,7 +8,7 @@ import numpy as np
 from transformers.image_utils import load_image
 
 
-model_name = "siglip"
+model_name = "clip_16"
 OUTPUT_DIR = os.path.join(TMP_PATH, f"{model_name}_ascii_finetuned")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
